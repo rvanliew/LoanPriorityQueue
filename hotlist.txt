@@ -1,0 +1,444 @@
+(CASE WHEN IFNULL(`Pending Adverse Date`,1)=1 THEN 
+(CASE when
+ 	((`Loan Folder Name`='My Pipeline'
+     	and IFNULL(`Milestone Funding Date`,1)=1)
+        	or (IFNULL(`Milestone Funding Date`,1)<>1
+        	and (IFNULL(`LO Conditions - Completion Date`,1)=1
+                	OR IFNULL(`PSC Escalation to LO`,1)<>1))
+       		and IFNULL(`Milestone Completion Date`,1)=1
+       		and `New LO Conditions Date`>='10/1/2020')
+Then
+(CASE
+
+ 	when INSTR(`Investor`,'Caliber')>0
+ 		and IFNULL(`Milestone Final Approved Date`,1)<>1
+ 		and `Milestone Final Approved Date`>='12/8/2020'
+ 	then -1000
+ 
+	when (`Last Finished Milestone`<>'Doc Signing' and `Last Finished Milestone`<>'Started' and `Last Finished Milestone`<>'Funding' and `Last Finished Milestone`<>'Completion')
+ 		and `Milestone Book Sent Down Date`<'1/28/2021' 
+ 		and (`LOA Last Confirmed Contact Date`<'1/29/2021' or IFNULL(`LOA Last Confirmed Contact Date`,1)=1)
+ 		and INSTR(`LOA Last Call Status`,'Confirmed: Rolled Loan Call')=0
+		and `Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+ 		and `Loan Type`='FHA'
+ 		and INSTR(`Occupancy Type`,'Prim')>0
+ 		and (DATE(CONCAT(MONTH(`Next Payment Due`),'-01-',DAY(`Next Payment Due`)))<'2/01/2021' or IFNULL(`Next Payment Due`,1)=1)
+ 		and (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1   
+        or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		and TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'))
+ 	then 5
+ 
+	when (`Last Finished Milestone`<>'Doc Signing' and `Last Finished Milestone`<>'Started' and `Last Finished Milestone`<>'Funding' and `Last Finished Milestone`<>'Completion')
+  		and `Milestone Book Sent Down Date`<'1/28/2021' 
+ 		and (`LOA Last Confirmed Contact Date`<'1/28/2021' or IFNULL(`LOA Last Confirmed Contact Date`,1)=1)
+		and `Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+ 		and `Loan Type`='FHA'
+  		and INSTR(`Occupancy Type`,'Prim')>0
+ 		and (DATE(CONCAT(MONTH(`Next Payment Due`),'-01-',DAY(`Next Payment Due`)))<'2/01/2021' or IFNULL(`Next Payment Due`,1)=1)
+ 	then 105
+ 
+	when INSTR(`Investor`,'Bridge')>0 -- IFNULL(`Scheduled Closing Date`,1)=1
+ 		and `Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+ 		and `Loan Type`='FHA'
+ 		and IFNULL(`MIlestone Resubmitted for Final Approval Date`,1)=1
+ 		and (DATE(CONCAT(MONTH(`Next Payment Due`),'-01-',DAY(`Next Payment Due`)))<'1/01/2021' or IFNULL(`Next Payment Due`,1)=1)
+ 		and (`Expected Closing Date` < '1/1/2021')
+ 		and (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1   
+        or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		and TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'04:00:00'))
+ 	then 4
+
+	when -- INSTR(`Investor`,'Bridge')>0 -- IFNULL(`Scheduled Closing Date`,1)=1
+ 		`Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+ 		and `Loan Type`='FHA'
+ 		and IFNULL(`MIlestone Resubmitted for Final Approval Date`,1)=1
+ 		and (DATE(CONCAT(MONTH(`Next Payment Due`),'-01-',DAY(`Next Payment Due`)))<'1/01/2021' or IFNULL(`Next Payment Due`,1)=1)
+ 		and (`Expected Closing Date` < '1/1/2021')
+ 		and (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1   
+        or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		and TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'04:00:00'))
+ 	then 4
+ 
+when INSTR(`Investor`,'Bridge')>0 -- IFNULL(`Scheduled Closing Date`,1)=1
+ 		and `Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+ 		and `Loan Type`='FHA'
+ 		and IFNULL(`MIlestone Resubmitted for Final Approval Date`,1)=1
+ 		and (DATE(CONCAT(MONTH(`Next Payment Due`),'-01-',DAY(`Next Payment Due`)))<'1/01/2021' or IFNULL(`Next Payment Due`,1)=1)
+ 		and (`Expected Closing Date` < '1/1/2021')
+ 	then 104
+
+ 	when -- INSTR(`Investor`,'Bridge')>0 -- IFNULL(`Scheduled Closing Date`,1)=1
+ 		`Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+ 		and `Loan Type`='FHA'
+ 		and IFNULL(`MIlestone Resubmitted for Final Approval Date`,1)=1
+ 		and (DATE(CONCAT(MONTH(`Next Payment Due`),'-01-',DAY(`Next Payment Due`)))<'1/01/2021' or IFNULL(`Next Payment Due`,1)=1)
+ 		and (`Expected Closing Date` < '1/1/2021')
+ 	then 104
+
+	When IFNULL(`Milestone Docs Signing Date`,1)<>1
+ 		AND IFNULL(`Milestone Funding Date`,1)=1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1) 
+ 	Then 1
+
+ 	When IFNULL(`Milestone Docs Signing Date`,1)<>1
+  		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND (IFNULL(`LO Conditions - Completion Date`,1)=1
+                	OR IFNULL(`PSC Escalation to LO`,1)<>1)
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1) 
+ 	Then 3
+ 
+	When IFNULL(`Milestone Docs Signing Date`,1)<>1
+ 		AND IFNULL(`Milestone Funding Date`,1)=1 
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1       
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        AND INSTR(`LOA Last Call Status`,'Confirmed')=0)                  
+ 	Then 1.5              
+
+	When IFNULL(`Milestone Docs Signing Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND (IFNULL(`LO Conditions - Completion Date`,1)=1
+                	OR IFNULL(`PSC Escalation to LO`,1)<>1)       
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        AND INSTR(`LOA Last Call Status`,'Confirmed')=0)                  
+ 	Then 3.5 
+ 
+	When INSTR(`LOA Last Call Status`,'ESCALATED')>0 
+ 	and INSTR(`Loan Folder Name`,'My Pipeline')>0 
+ 	Then 201
+ 
+ 	When `Last Finished Milestone`='Suspended'
+ 	and INSTR(`Loan Folder Name`,'My Pipeline')>0 
+ 	Then 201
+ 
+ 	When `Borrower Unresponsive Status`<>'Active' and `Borrower Unresponsive Status`<>'Restructure Complete'
+ 	and INSTR(`Loan Folder Name`,'My Pipeline')>0 
+ 	Then 201
+
+	When (INSTR(UPPER(`LOA Last Call Status`),'ON HOLD')>0
+ 		And IFNULL(`Milestone Docs Signing Date`,1)=1
+ 		And DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)<=2 )
+ 	Then 200  
+ 
+	When
+ 		IFNULL(`Milestone Final Approved Date`,1)<>1
+		and IFNULL(`LO Scheduling Request`,1) <> 1
+		and IFNULL(`LO Conditions - Completion Date`,1)<>1
+ 		and IFNULL(`Scheduled Closing Date`,1)=1
+ 		and IFNULL(`CD Sent Date`,1)<>1
+ 		and IFNULL(`Title Received Date`,1)<>1
+ 		and (`Service Tracker Status` = 'Rolled Loan Services Complete'
+        or `Service Tracker Status` = 'Pending Corrections Complete'
+        or `Service Tracker Status` = 'Services Complete')
+ 		and IFNULL(`CTC UW Approval Date`,1)<>1 
+    	and ((DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1)
+        or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)=0 and INSTR(`LOA Last Call Status`,'Sched')=0))
+ 	Then 2
+
+	When
+ 		IFNULL(`Milestone Final Approved Date`,1)<>1
+		and IFNULL(`LO Scheduling Request`,1) <> 1
+		and IFNULL(`LO Conditions - Completion Date`,1)<>1
+ 		and IFNULL(`Scheduled Closing Date`,1)=1
+ 		and IFNULL(`CD Sent Date`,1)<>1
+ 		and (`Service Tracker Status` = 'Rolled Loan Services Complete'
+        or `Service Tracker Status` = 'Pending Corrections Complete'
+        or `Service Tracker Status` = 'Services Complete')
+ 		and IFNULL(`CTC UW Approval Date`,1)<>1 
+ 		and IFNULL(`Title Received Date`,1)<>1
+    	and (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		and TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        and `LOA Last Contact Date`<>`LOA Last Confirmed Contact Date`)
+ 	Then 2.5
+
+	When
+ 		IFNULL(`Milestone Final Approved Date`,1)<>1
+		and IFNULL(`LO Scheduling Request`,1) <> 1
+		and IFNULL(`LO Conditions - Completion Date`,1)<>1
+ 		and IFNULL(`Scheduled Closing Date`,1)=1
+ 		and IFNULL(`CD Sent Date`,1)<>1
+ 		and IFNULL(`Title Received Date`,1)<>1
+ 		and (`Service Tracker Status` = 'Rolled Loan Services Complete'
+        or `Service Tracker Status` = 'Pending Corrections Complete'
+        or `Service Tracker Status` = 'Services Complete')
+ 		and IFNULL(`CTC UW Approval Date`,1)<>1 
+    	and (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0)
+ 	Then 102
+ 
+	When IFNULL(`Milestone Final Approved Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND (IFNULL(`LO Conditions - Completion Date`,1)=1
+             OR IFNULL(`PSC Escalation to LO`,1)<>1)
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1) 
+ 	Then 6
+
+	When IFNULL(`Milestone Final Approved Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND (IFNULL(`LO Conditions - Completion Date`,1)=1
+             OR IFNULL(`PSC Escalation to LO`,1)<>1)     
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        AND INSTR(`LOA Last Call Status`,'Confirmed')=0)                  
+ 	Then 6.5
+ 
+	when IFNULL(`CD Sent Date`,1)<>1
+ 		And IFNULL(`CD Signed`,1)=1
+ 		And (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`CD Sent Date`)=0
+        OR DATEDIFF(`CD Sent Date`, `LOA Last Contact Date`)>0)
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1)
+	then 7
+
+ 	WHEN `Last Finished Milestone`='Conditional Approval'
+ 		AND ((IFNULL(`New SR Condition Added Date`,1)=1 and IFNULL(`SR Conditions Date`,1)=1)
+             	OR IFNULL(`SR Conditions Date`,1)<>1)
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+ 		AND (`Service Tracker Status` = 'Rolled Loan Services Complete'
+        or `Service Tracker Status` = 'Pending Corrections Complete'
+        or `Service Tracker Status` = 'Services Complete')
+        and IFNULL(`Title Received Date`,1)<>1
+		and (CASE 
+				when IFNULL(`Appraisal Type`,1) = 1
+                and `Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+                then 'Appraisal Cleared'
+        		when `Appraisal Type` = 'No appraisal/inspection obtained'
+                then 'Appraisal Cleared'
+    			when IFNULL(`Appraisal Received Date`,1)=1
+                then 'Appraisal Outstanding' else 'Appraisal Cleared'
+                END) = 'Appraisal Cleared'
+     	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1 or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)=0 and INSTR(`LOA Last Call Status`,'Condition')=0 and INSTR(`LOA Last Call Status`,'Funding Defect')=0))
+ 	THEN 8 
+ 
+	When IFNULL(`Milestone Conditional Approval Date`,1)<>1
+ 		AND IFNULL(`PSC Escalation to LO`,1)<>1
+		AND `PSC Action Date`>=`LOA Last Contact Date`
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1 or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)=0 and INSTR(`LOA Last Call Status`,'Condition')=0 and INSTR(`LOA Last Call Status`,'Funding Defect')=0)) 
+ 	Then 8.1
+ 
+ 	when IFNULL(`Milestone Conditional Approval Date`,1)<>1
+ 		AND IFNULL(`New LO Conditions Date`,1)<>1
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1 or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)=0 and INSTR(`LOA Last Call Status`,'Condition')=0 and INSTR(`LOA Last Call Status`,'Funding Defect')=0))  
+ 	Then 8.1
+ 
+ 	when IFNULL(`Milestone Conditional Approval Date`,1)=1
+ 		AND IFNULL(`New LO Conditions Date`,1)<>1
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+		AND IFNULL(`New LO Conditions Date`,`PSC Action Date`)>=IFNULL(`LOA Last Contact Date`, `Milestone Book Sent Down Date`)
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1 or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)=0 and INSTR(`LOA Last Call Status`,'Condition')=0 and INSTR(`LOA Last Call Status`,'Funding Defect')=0)) 
+ 	Then 8.1
+ 
+ 	WHEN `Last Finished Milestone`='Conditional Approval'
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1 	
+     	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1 or (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)=0 and INSTR(`LOA Last Call Status`,'Condition')=0 and INSTR(`LOA Last Call Status`,'Funding Defect')=0))
+ 	THEN 8.1 
+ 
+	WHEN IFNULL(`LOA Last Call Status`,1)=1
+ 		AND IFNULL(`LOA Last Confirmed Contact Date`,1)=1
+ 	THEN 9
+ 
+	WHEN IFNULL(`LOA Last Call Status`,1)=1
+ 		AND IFNULL(`LOA Last Confirmed Contact Date`,1)=1
+ 	THEN 9
+
+   	WHEN IFNULL(`Scheduled Closing Date`,1)=1
+        AND DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`Milestone Book Sent Down Date`)>9
+ 		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),IFNULL(`LOA Last Contact Date`,`Milestone Book Sent Down Date`))>9
+        OR DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`Loan Last Touched Date`)>9)
+ 	Then 10
+
+	when IFNULL(`CD Sent Date`,1)<>1
+ 		And IFNULL(`CD Signed`,1)=1
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1)
+	then 11
+ 
+	when IFNULL(`CD Sent Date`,1)<>1
+ 		And IFNULL(`CD Signed`,1)=1
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        AND INSTR(`LOA Last Call Status`,'Confirmed')=0) 
+	then 11.5
+
+   	WHEN `Last Finished Milestone`='Conditional Approval'
+ 		AND ((IFNULL(`New SR Condition Added Date`,1)=1 and IFNULL(`SR Conditions Date`,1)=1)
+             	OR IFNULL(`SR Conditions Date`,1)<>1)
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+ 		AND (`Service Tracker Status` = 'Rolled Loan Services Complete'
+        or `Service Tracker Status` = 'Pending Corrections Complete'
+        or `Service Tracker Status` = 'Services Complete')
+        and IFNULL(`Title Received Date`,1)<>1
+		and (CASE 
+				when IFNULL(`Appraisal Type`,1) = 1
+                and `Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+                then 'Appraisal Cleared'
+        		when `Appraisal Type` = 'No appraisal/inspection obtained'
+                then 'Appraisal Cleared'
+    			when IFNULL(`Appraisal Received Date`,1)=1
+                then 'Appraisal Outstanding' else 'Appraisal Cleared'
+                END) = 'Appraisal Cleared'
+ 		AND INSTR(`LOA Last Call Status`,'Condition')>0
+     	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1) 
+ 	THEN 12
+ 
+	When IFNULL(`Milestone Conditional Approval Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+ 		AND INSTR(`LOA Last Call Status`,'Condition')>0
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1) 
+ 	Then 12
+
+	When IFNULL(`Milestone Loan Assignment Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND IFNULL(`PSC Escalation to LO`,1)<>1 
+  		AND INSTR(`LOA Last Call Status`,'Condition')>0
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1) 
+ 	Then 12
+
+	when IFNULL(`Milestone Conditional Approval Date`,1)=1
+ 		AND IFNULL(`New LO Conditions Date`,1)<>1
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+  		AND INSTR(`LOA Last Call Status`,'Condition')>0
+     	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1) 
+ 	Then 12
+  	WHEN `Last Finished Milestone`='Conditional Approval'
+ 		AND ((IFNULL(`New SR Condition Added Date`,1)=1 and IFNULL(`SR Conditions Date`,1)=1)
+             	OR IFNULL(`SR Conditions Date`,1)<>1)
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+ 		AND (`Service Tracker Status` = 'Rolled Loan Services Complete'
+        or `Service Tracker Status` = 'Pending Corrections Complete'
+        or `Service Tracker Status` = 'Services Complete')
+        and IFNULL(`Title Received Date`,1)<>1
+		and (CASE 
+				when IFNULL(`Appraisal Type`,1) = 1
+                and `Fannie Mae Loan Doc Type Code`='StreamlineRefinance'
+                then 'Appraisal Cleared'
+        		when `Appraisal Type` = 'No appraisal/inspection obtained'
+                then 'Appraisal Cleared'
+    			when IFNULL(`Appraisal Received Date`,1)=1
+                then 'Appraisal Outstanding' else 'Appraisal Cleared'
+                END) = 'Appraisal Cleared'
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        AND INSTR(`LOA Last Call Status`,'Confirmed')=0) 
+ 	THEN 12.5
+ 
+	When IFNULL(`Milestone Conditional Approval Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		And (INSTR(`LOA Last Call Status`,'Conditions')>0)
+		AND `New LO Conditions Date`<=`LOA Last Contact Date` 
+ 		AND (IFNULL(`LO Conditions - Completion Date`,1)=1
+             OR IFNULL(`PSC Escalation to LO`,1)<>1)
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        AND INSTR(`LOA Last Call Status`,'Confirmed')=0) 
+ 	Then 12.5
+
+	When IFNULL(`Milestone Loan Assignment Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND IFNULL(`PSC Escalation to LO`,1)<>1 
+ 		AND INSTR(`LOA Last Call Status`,'Condition')>0 
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        AND INSTR(`LOA Last Call Status`,'Confirmed')=0) 
+ 	Then 12.5
+ 
+	when IFNULL(`Milestone Conditional Approval Date`,1)=1
+ 		AND IFNULL(`New LO Conditions Date`,1)<>1
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+  		AND INSTR(`LOA Last Call Status`,'Condition')>0
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00'
+        AND INSTR(`LOA Last Call Status`,'Confirmed')=0) 
+ 	Then 12.5
+ 
+	when (INSTR(`LOA Last Call Status`,'Reviews')>0
+		and `LOA Last Contact Date` <> `LOA Last Confirmed Contact Date`
+        and IFNULL(`Milestone Completion Date`,1)<>1
+        and (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 OR IFNULL(`LOA Last Contact Date`,1)=1))
+ 		
+ 	OR (INSTR(`LOA Last Call Status`,'Reviews')=0
+ 		AND IFNULL(`Milestone Completion Date`,1)<>1
+        AND `Last Finished Milestone Date` > `LOA Last Confirmed Contact Date`        
+      	and (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 OR IFNULL(`LOA Last Contact Date`,1)=1))
+ 	Then 13
+
+	WHEN IFNULL(`LOA Last Confirmed Contact Date`,1)=1
+    	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)>0 or IFNULL(`LOA Last Contact Date`,1)=1) 
+ 	THEN 14
+
+	WHEN IFNULL(`LOA Last Confirmed Contact Date`,1)=1
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0
+ 		AND TIMEDIFF(TIME(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Status Time`) >'05:00:00')  
+ 	THEN 14.5
+ 
+	When IFNULL(`Milestone Docs Signing Date`,1)<>1
+ 		AND IFNULL(`Milestone Funding Date`,1)=1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1       
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0)                
+ 	Then 101
+
+	When IFNULL(`Milestone Docs Signing Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND (IFNULL(`LO Conditions - Completion Date`,1)=1
+                	OR IFNULL(`PSC Escalation to LO`,1)<>1)       
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0)                
+ 	Then 103 
+ 
+	When IFNULL(`Milestone Final Approved Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND (IFNULL(`LO Conditions - Completion Date`,1)=1
+             OR IFNULL(`PSC Escalation to LO`,1)<>1)     
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0)                  
+ 	Then 106
+
+	when IFNULL(`CD Sent Date`,1)<>1
+ 		And IFNULL(`CD Signed`,1)=1
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0) 
+	then 111
+
+	When IFNULL(`Milestone Conditional Approval Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0) 
+ 	Then 112
+
+	When IFNULL(`Milestone Loan Assignment Date`,1)<>1
+ 		AND INSTR(`Last Finished Milestone`,'Complet')=0
+		AND IFNULL(`PSC Escalation to LO`,1)<>1
+		AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`) = 0) 
+ 	Then 112 
+
+	when IFNULL(`Milestone Conditional Approval Date`,1)=1
+ 		AND IFNULL(`New LO Conditions Date`,1)<>1
+ 		AND IFNULL(`LO Conditions - Completion Date`,1)=1
+		AND IFNULL(`New LO Conditions Date`,`Last Finished Milestone Date`)>=IFNULL(`LOA Last Contact Date`, `Milestone Book Sent Down Date`)
+     	AND (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)=0)
+	then 112 
+ 
+	when (INSTR(`LOA Last Call Status`,'Reviews')>0
+		and `LOA Last Contact Date` <> `LOA Last Confirmed Contact Date`
+        and IFNULL(`Milestone Completion Date`,1)<>1)
+ 		
+ 	OR (INSTR(`LOA Last Call Status`,'Reviews')=0
+ 		AND IFNULL(`Milestone Completion Date`,1)<>1)
+      	and (DATEDIFF(DATE(ADDTIME(CURRENT_TIMESTAMP(),-25200)),`LOA Last Contact Date`)=0)
+ 	Then 113
+
+	WHEN IFNULL(`LOA Last Confirmed Contact Date`,1)=1
+ 	THEN 114
+
+ 	When  IFNULL(`LOA Last Contact Date`,1)<>1
+ 		AND IFNULL(`LOA Last Confirmed Contact Date`,1)<>1
+ 	Then 110
+
+ 	When IFNULL(`Scheduled Closing Date`,1)<>1
+ 	Then 202
+ 
+else 1000
+END) 
+END)
+END) 
